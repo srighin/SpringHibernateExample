@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xsi:schemaLocation="http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/PA" />
+		<property name="username" value="root" />
+		<property name="password" value="password" />
+	</bean>
+
+<!-- Hibernate 3 XML SessionFactory Bean definition-->
+<!-- 	<bean excInst="hibernate3SessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property excCategory="dataSource" ref="dataSource" />
+		<property excCategory="mappingResources">
+			<list>
+				<value>exceptions.hbm.xml</value>
+			</list>
+		</property>
+		<property excCategory="hibernateProperties">
+			<value>
+				hibernate.dialect=org.hibernate.dialect.MySQLDialect
+			</value>
+		</property>
+	</bean> -->
+
+<!-- Hibernate 3 Annotation SessionFactory Bean definition-->
+	<bean id="hibernate3AnnotatedSessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.journaldev.model.Exceptions</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<bean id="exceptionsDao" class="com.journaldev.dao.ExceptionsDaoImpl">
+		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
+	</bean>
+
+	<!-- JobRepository and JobLauncher are configuration/setup classes -->
+	<bean id="jobRepository"
+		  class="org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean" />
+
+	<bean id="jobLauncher"
+		  class="org.springframework.batch.core.launch.support.SimpleJobLauncher">
+		<property name="jobRepository" ref="jobRepository" />
+	</bean>
+
+
+	<!-- ItemReader which reads from database and returns the row mapped by
+		rowMapper -->
+	<bean id="databaseItemReader"
+		  class="org.springframework.batch.item.database.JdbcCursorItemReader">
+
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="sql"
+				  value="SELECT STUDENT_NAME, DOB, PERCENTAGE FROM PA.EXAM_RESULT" />
+
+		<property name="rowMapper">
+			<bean class="com.journaldev.ExamResultRowMapper" />
+		</property>
+
+	</bean>
+
+
+	<!-- ItemWriter writes a line into output flat file -->
+	<!--<bean id="flatFileItemWriter" class="org.springframework.batch.item.file.FlatFileItemWriter"
+		  scope="step">
+
+		<property name="resource" value="file:../resources/examResult.txt" />
+
+		<property name="lineAggregator">
+
+			&lt;!&ndash; An Aggregator which converts an object into delimited list of strings &ndash;&gt;
+			<bean
+					class="org.springframework.batch.item.file.transform.DelimitedLineAggregator">
+
+				<property name="delimiter" value="|" />
+
+				<property name="fieldExtractor">
+
+					&lt;!&ndash; Extractor which returns the value of beans property through reflection &ndash;&gt;
+					<bean
+							class="org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor">
+						<property name="names" value="studentName, percentage, dob" />
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>-->
+
+	<bean id="databaseItemWriter"
+		  class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="sql">
+			<value>
+				<![CDATA[
+            	update  PA.EXAM_RESULT SET percentage = (:percentage) WHERE student_name =: student_name
+            ]]>
+			</value>
+		</property>
+
+		<property name="itemSqlParameterSourceProvider">
+			<bean
+					class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
+		</property>
+
+	</bean>
+
+
+	<!-- Optional JobExecutionListener to perform business logic before and after the job -->
+	<bean id="jobListener" class="com.journaldev.ExamResultJobListener" />
+
+	<!-- Optional ItemProcessor to perform business logic/filtering on the input records -->
+	<bean id="itemProcessor" class="com.journaldev.ExamResultItemProcessor" />
+
+	<!-- Step will need a transaction manager -->
+	<bean id="transactionManager"
+		  class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
+
+	<bean id="examResultWriter"
+		  class="com.journaldev.ExamResultWriter" />
+
+	<!-- Actual Job -->
+	<batch:job id="examResultJob">
+		<batch:step id="step1">
+			<batch:tasklet transaction-manager="transactionManager">
+				<batch:chunk reader="databaseItemReader" writer="examResultWriter"
+							 processor="itemProcessor" commit-interval="10" />
+			</batch:tasklet>
+		</batch:step>
+		<batch:listeners>
+			<batch:listener ref="jobListener" />
+		</batch:listeners>
+	</batch:job>
+
+
+
+	<bean id="sessionFactory"
+		  class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>com.journaldev.model.ExamResult</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
+				<prop key="hibernate.current_session_context_class">thread</prop>
+				<prop key="hibernate.show_sql">false</prop>
+			</props>
+		</property>
+	</bean>
+
+</beans>
