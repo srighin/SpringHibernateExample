@@ -17,7 +17,7 @@ public class ExamResultWriter implements ItemWriter<ExamResult> {
         for (ExamResult item :
                 items) {
             System.out.println("During write : "+item);
-            item.setPercentage(100);
+            item.setUsg("99F");
             getService().addExamResult(item);
 
         }

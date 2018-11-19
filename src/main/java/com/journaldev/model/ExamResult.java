@@ -16,7 +16,17 @@ public class ExamResult implements Serializable {
 	private String studentName;
 	private Date dob;
 	private double percentage;
-	
+
+	private String usg;
+
+
+	public String getUsg() {
+		return usg;
+	}
+
+	public void setUsg(String usg) {
+		this.usg = usg;
+	}
 
 	public String getStudentName() {
 		return studentName;
@@ -52,8 +62,12 @@ public class ExamResult implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ExamResult [studentName=" + studentName + ", dob=" + dob + ", percentage=" + percentage + "]";
+		return "ExamResult{" +
+				"id=" + id +
+				", studentName='" + studentName + '\'' +
+				", dob=" + dob +
+				", percentage=" + percentage +
+				", usg='" + usg + '\'' +
+				'}';
 	}
-	
-	
 }

@@ -80,7 +80,7 @@
 		<property name="dataSource" ref="dataSource" />
 
 		<property name="sql"
-				  value="SELECT ID, STUDENT_NAME, DOB, PERCENTAGE FROM PA.EXAM_RESULT" />
+				  value="SELECT ID, STUDENT_NAME, DOB, PERCENTAGE, USG FROM PA.EXAM_RESULT WHERE USG IS NULL" />
 
 		<property name="rowMapper">
 			<bean class="com.journaldev.ExamResultRowMapper" />
