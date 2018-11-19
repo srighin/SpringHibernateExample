@@ -13,10 +13,13 @@ public class ExamResultRowMapper implements RowMapper<ExamResult> {
 	public ExamResult mapRow(ResultSet rs, int rowNum) throws SQLException {
 
 		ExamResult result = new ExamResult();
+		result.setId(rs.getInt("ID"));
 		result.setStudentName(rs.getString("student_name"));
-		result.setDob(new LocalDate(rs.getDate("dob")));
+		LocalDate dob = new LocalDate(rs.getDate("dob"));
+		result.setDob(dob.toDate());
 		result.setPercentage(rs.getDouble("percentage"));
-			
+
+
 		return result;
 	} 
 

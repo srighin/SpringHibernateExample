@@ -1,12 +1,20 @@
 package com.journaldev.model;
 
-import org.joda.time.LocalDate;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.Date;
 
+@Entity
+@Table(name = "EXAM_RESULT")
+public class ExamResult implements Serializable {
 
-public class ExamResult {
-	
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private int id;
+
+	@Column(name = "student_name")
 	private String studentName;
-	private LocalDate dob;
+	private Date dob;
 	private double percentage;
 	
 
@@ -18,11 +26,11 @@ public class ExamResult {
 		this.studentName = studentName;
 	}
 	
-	public LocalDate getDob() {
+	public Date getDob() {
 		return dob;
 	}
 	
-	public void setDob(LocalDate dob) {
+	public void setDob(Date dob) {
 		this.dob = dob;
 	}
 	
@@ -32,6 +40,14 @@ public class ExamResult {
 	
 	public void setPercentage(double percentage) {
 		this.percentage = percentage;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
 	}
 
 	@Override

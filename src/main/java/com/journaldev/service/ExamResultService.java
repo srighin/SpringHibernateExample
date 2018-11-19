@@ -7,10 +7,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 public class ExamResultService implements IExamResultService{
 
-    @Autowired
     IExamDao examDao;
 
     public void addExamResult (ExamResult examResult){

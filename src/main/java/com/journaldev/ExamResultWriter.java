@@ -3,14 +3,12 @@ package com.journaldev;
 import com.journaldev.model.ExamResult;
 import com.journaldev.service.IExamResultService;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 
 public class ExamResultWriter implements ItemWriter<ExamResult> {
 
-    @Autowired
     IExamResultService service;
 
 

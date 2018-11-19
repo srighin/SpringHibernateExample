@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	   xmlns:batch="http://www.springframework.org/schema/batch" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:context="http://www.springframework.org/schema/context"
 	   xsi:schemaLocation="http://www.springframework.org/schema/batch	http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
-		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
+	<context:component-scan base-package="com.journaldev.*" />
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
@@ -29,12 +31,13 @@
 	</bean> -->
 
 <!-- Hibernate 3 Annotation SessionFactory Bean definition-->
-	<bean id="hibernate3AnnotatedSessionFactory"
-		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+	<!--<bean id="hibernate3AnnotatedSessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">-->
+	<bean id="hibernate3AnnotatedSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="annotatedClasses">
 			<list>
-				<value>com.journaldev.model.Exceptions</value>
+				<value>com.journaldev.model.ExamResult</value>
 			</list>
 		</property>
 		<property name="hibernateProperties">
@@ -49,6 +52,15 @@
 	<bean id="exceptionsDao" class="com.journaldev.dao.ExceptionsDaoImpl">
 		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
 	</bean>
+
+	<bean id="examDao" class="com.journaldev.dao.ExamDao">
+		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
+	</bean>
+
+	<bean id="examResultService" class="com.journaldev.service.ExamResultService">
+		<property name="examDao" ref="examDao" />
+	</bean>
+
 
 	<!-- JobRepository and JobLauncher are configuration/setup classes -->
 	<bean id="jobRepository"
@@ -68,7 +80,7 @@
 		<property name="dataSource" ref="dataSource" />
 
 		<property name="sql"
-				  value="SELECT STUDENT_NAME, DOB, PERCENTAGE FROM PA.EXAM_RESULT" />
+				  value="SELECT ID, STUDENT_NAME, DOB, PERCENTAGE FROM PA.EXAM_RESULT" />
 
 		<property name="rowMapper">
 			<bean class="com.journaldev.ExamResultRowMapper" />
@@ -135,7 +147,9 @@
 		  class="org.springframework.batch.support.transaction.ResourcelessTransactionManager" />
 
 	<bean id="examResultWriter"
-		  class="com.journaldev.ExamResultWriter" />
+		  class="com.journaldev.ExamResultWriter" >
+			<property name="service" ref="examResultService"/>
+	</bean>
 
 	<!-- Actual Job -->
 	<batch:job id="examResultJob">

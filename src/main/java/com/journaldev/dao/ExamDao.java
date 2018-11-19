@@ -1,24 +1,28 @@
 package com.journaldev.dao;
 
 import com.journaldev.model.ExamResult;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.hibernate.Transaction;
 
 import java.util.List;
 
-@Component
 public class ExamDao implements IExamDao {
 
-    @Autowired
     private SessionFactory sessionFactory;
 
 
     public void addExamResult(ExamResult result) {
-        getSessionFactory().getCurrentSession().save(result);
+
+        Session session=getSessionFactory().getCurrentSession();
+        Transaction trans=session.beginTransaction();
+        session.saveOrUpdate(result);
+        trans.commit();
     }
 
     public List<ExamResult> getExamResult() {
+
+
         List<ExamResult> list = getSessionFactory().getCurrentSession().createQuery("from PA.EXAM_RESULT").list();
         return list;
     }
