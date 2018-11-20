@@ -49,9 +49,7 @@
 		</property>
 	</bean>
 	
-	<bean id="exceptionsDao" class="com.journaldev.dao.ExceptionsDaoImpl">
-		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
-	</bean>
+
 
 	<bean id="examDao" class="com.journaldev.dao.ExamDao">
 		<property name="sessionFactory" ref="hibernate3AnnotatedSessionFactory" />
@@ -115,7 +113,7 @@
 		</property>
 	</bean>-->
 
-	<bean id="databaseItemWriter"
+	<!--<bean id="databaseItemWriter"
 		  class="org.springframework.batch.item.database.JdbcBatchItemWriter">
 
 		<property name="dataSource" ref="dataSource" />
@@ -133,7 +131,7 @@
 					class="org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider" />
 		</property>
 
-	</bean>
+	</bean>-->
 
 
 	<!-- Optional JobExecutionListener to perform business logic before and after the job -->
