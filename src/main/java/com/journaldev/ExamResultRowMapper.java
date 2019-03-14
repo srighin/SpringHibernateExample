@@ -22,6 +22,8 @@ public class ExamResultRowMapper implements RowMapper<ExamResult> {
 
 		System.out.println("development 2s");
 
+		System.out.println("Develop 2");
+
 
 		return result;
 	} 
