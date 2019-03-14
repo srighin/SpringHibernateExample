@@ -20,6 +20,8 @@ public class ExamResultRowMapper implements RowMapper<ExamResult> {
 		result.setPercentage(rs.getDouble("percentage"));
 		System.out.println("develop 1");
 
+		System.out.println("development 2s");
+
 
 		return result;
 	} 
