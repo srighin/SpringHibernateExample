@@ -19,6 +19,8 @@ public class ExamResultRowMapper implements RowMapper<ExamResult> {
 		result.setDob(dob.toDate());
 		result.setPercentage(rs.getDouble("percentage"));
 
+		System.out.println("development 2s");
+
 
 		return result;
 	} 
